@@ -29,7 +29,7 @@ set :default_env, { path: '/home/ec2-user/.rvm/gems/ruby-2.1.2/bin:/home/ec2-use
 # set :keep_releases, 5
 
 set :unicorn_config, "#{current_path}/config/unicorn.rb"
-set :unicorn_binary, "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -D"
+set :unicorn_binary, "PATH=#{fetch(:default_env)[:path]} RAILS_ENV=staging unicorn_rails -c #{fetch(:unicorn_config)} -D"
 set :unicorn_pid, "#{current_path}/tmp/pids/unicorn.pid"
 
 namespace :deploy do
