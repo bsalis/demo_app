@@ -25,17 +25,34 @@ set :linked_files, %w{config/database.yml}
 #set :default_env, { path: '/opt/ruby/bin:$PATH' }
 set :default_env, { path: '/home/ec2-user/.rvm/gems/ruby-2.1.2/bin:/home/ec2-user/.rvm/gems/ruby-2.1.2@global/bin:/home/ec2-user/.rvm/rubies/ruby-2.1.2/bin:/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/opt/aws/bin:/home/ec2-user/.rvm/bin:/home/ec2-user/bin' }
 
-  
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
+set :unicorn_config, "#{current_path}/config/unicorn.rb"
+set :unicorn_binary, "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -D"
+set :unicorn_pid, "#{current_path}/tmp/pids/unicorn.pid"
+
 namespace :deploy do
+
+  desc 'Start Unicorn'
+  task :start do
+    on roles(:app) do
+      execute "cd #{current_path} && #{fetch(:unicorn_binary)}"
+    end
+  end
+  
+  desc 'Stop Unicorn'
+  task :stop do
+    on roles(:app) do
+      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill `cat #{fetch(:unicorn_pid)}`; fi"
+    end
+  end
 
   desc 'Restart application'
   task :restart do
-    on roles(:app), 'in'.to_sym => sequence, wait: 5 do
-      # Your restart mechanism here, for example:
-      # execute :touch, release_path.join('tmp/restart.txt')
+    on roles(:app), 'in'.to_sym => :sequence, wait: 5 do
+      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill `cat #{fetch(:unicorn_pid)}`; fi"
+      execute "cd #{current_path} && #{fetch(:unicorn_binary)}"
     end
   end
 
