@@ -51,7 +51,7 @@ namespace :deploy do
   desc 'Restart application'
   task :restart do
     on roles(:app), 'in'.to_sym => :sequence, wait: 5 do
-      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill `cat #{fetch(:unicorn_pid)}`; fi"
+      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill -QUIT `cat #{fetch(:unicorn_pid)}`; sleep 5; fi"
       unicorn_binary = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
       execute "cd #{current_path} && #{unicorn_binary}"
     end
