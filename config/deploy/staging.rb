@@ -1,3 +1,6 @@
+
+set :rails_env, 'staging'
+
 # Simple Role Syntax
 # ==================
 # Supports bulk-adding hosts to roles, the primary server in each group
@@ -15,7 +18,7 @@ role :db,  %w{ec2-user@ec2-54-79-37-64.ap-southeast-2.compute.amazonaws.com}
 # server list. The second argument is a, or duck-types, Hash and is
 # used to set extended properties on the server.
 
-server 'ec2-54-79-37-64.ap-southeast-2.compute.amazonaws.com', user: 'ec2-user', roles: %w{web app}, my_property: :my_value
+server 'ec2-54-79-37-64.ap-southeast-2.compute.amazonaws.com', user: 'ec2-user', roles: %w{web app}  #, my_property: :my_value
 
 
 # Custom SSH Options

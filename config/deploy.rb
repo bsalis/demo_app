@@ -3,7 +3,7 @@ lock '3.2.1'
 
 set :application, 'demo_app'
 set :scm, :git
-#set :repo_url, 'git@github.com:bsalis/demo_app.git'   this needs ssh keys setup
+#set :repo_url, 'git@github.com:bsalis/demo_app.git'   TODO this needs ssh key forwarding setup
 set :repo_url, 'https://github.com/bsalis/demo_app.git'
 set :branch, 'master'
 set :user, 'ec2-user'
@@ -29,30 +29,31 @@ set :default_env, { path: '/home/ec2-user/.rvm/gems/ruby-2.1.2/bin:/home/ec2-use
 # set :keep_releases, 5
 
 set :unicorn_config, "#{current_path}/config/unicorn.rb"
-set :unicorn_binary, "PATH=#{fetch(:default_env)[:path]} RAILS_ENV=staging unicorn_rails -c #{fetch(:unicorn_config)} -D"
+#set :unicorn_binary, "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
 set :unicorn_pid, "#{current_path}/tmp/pids/unicorn.pid"
 
 namespace :deploy do
 
-  desc 'Start Unicorn'
-  task :start do
-    on roles(:app) do
-      execute "cd #{current_path} && #{fetch(:unicorn_binary)}"
-    end
-  end
-  
-  desc 'Stop Unicorn'
-  task :stop do
-    on roles(:app) do
-      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill `cat #{fetch(:unicorn_pid)}`; fi"
-    end
-  end
+#  desc 'Start Unicorn'
+#  task :start do
+#    on roles(:app) do
+#      execute "cd #{current_path} && #{fetch(:unicorn_binary)}"
+#    end
+#  end
+#  
+#  desc 'Stop Unicorn'
+#  task :stop do
+#    on roles(:app) do
+#      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill `cat #{fetch(:unicorn_pid)}`; fi"
+#    end
+#  end
 
   desc 'Restart application'
   task :restart do
     on roles(:app), 'in'.to_sym => :sequence, wait: 5 do
       execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill `cat #{fetch(:unicorn_pid)}`; fi"
-      execute "cd #{current_path} && #{fetch(:unicorn_binary)}"
+      unicorn_binary = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
+      execute "cd #{current_path} && #{unicorn_binary}"
     end
   end
 
@@ -81,9 +82,10 @@ task :check_write_permissions do
 end
 
 desc "Check that we can access everything"
-task :show_path do
+task :foo do
   on roles(:all) do |host|
-    execute "echo $PATH"
+    unicorn_binary = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
+    puts "#{unicorn_binary}"
   end
 end
 
