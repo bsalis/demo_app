@@ -30,7 +30,7 @@ set :default_env, { path: '/home/ec2-user/.rvm/gems/ruby-2.1.2/bin:/home/ec2-use
 
 set :unicorn_config, "#{current_path}/config/unicorn.rb"
 #set :unicorn_binary, "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
-set :unicorn_pid, "#{current_path}/tmp/pids/unicorn.pid"
+set :unicorn_pid, "#{current_path}/../shared/unicorn.pid"
 
 namespace :deploy do
 
@@ -46,7 +46,7 @@ namespace :deploy do
   task :stop do
     on roles(:app) do
       upid = fetch(:unicorn_pid)
-      execute "if [ -f #{upid} ]; then kill -QUIT `cat #{fetch(:unicorn_pid)}`; rm #{upid}; fi"
+      execute "if [ -f #{upid} ]; then kill -QUIT `cat #{fetch(:unicorn_pid)}`; rm -rf #{upid}; fi"
     end
   end
 
@@ -54,8 +54,8 @@ namespace :deploy do
   task :restart do
     on roles(:app), 'in'.to_sym => :sequence, wait: 5 do
       upid = fetch(:unicorn_pid)
-      #ubin = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
-      execute "if [ -f #{upid} ]; then kill -HUP `cat #{upid}`; fi"
+      ubin = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
+      execute "if [ -f #{upid} ]; then kill -HUP `cat #{upid}`; else cd #{current_path} && #{ubin}; fi"
     end
   end
 
@@ -83,11 +83,9 @@ task :check_write_permissions do
   end
 end
 
-desc "Check that we can access everything"
+desc "Test task"
 task :foo do
   on roles(:all) do |host|
-    puts 'fooo'
-    sleep 5
     puts 'bar'
   end
 end
