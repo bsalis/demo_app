@@ -54,8 +54,8 @@ namespace :deploy do
   task :restart do
     on roles(:app), 'in'.to_sym => :sequence, wait: 5 do
       upid = fetch(:unicorn_pid)
-      ubin = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
-      execute "if [ -f #{upid} ]; then kill -HUP `cat #{upid}`; else cd #{current_path} && #{ubin}; fi"
+      #ubin = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
+      execute "if [ -f #{upid} ]; then kill -HUP `cat #{upid}`; fi"
     end
   end
 
