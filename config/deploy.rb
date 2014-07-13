@@ -30,7 +30,7 @@ set :default_env, { path: '/home/ec2-user/.rvm/gems/ruby-2.1.2/bin:/home/ec2-use
 
 set :unicorn_config, "#{current_path}/config/unicorn.rb"
 #set :unicorn_binary, "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
-set :unicorn_pid, "#{current_path}/../shared/unicorn.pid"
+set :unicorn_pid, "/home/ec2-user/demo_app/shared/unicorn.pid"
 
 namespace :deploy do
 
