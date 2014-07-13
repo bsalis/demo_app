@@ -10,8 +10,8 @@
 
 local_path = "#{ENV['HOME']}/workspace"
 remote_path = "#{ENV['HOME']}/demo_app"
-ROOT_PATH = File.directory?(dev_path) ? dev_path : prod_path
-APP_PATH = File.directory?(dev_path) ? ROOT_PATH + '/demo_app' : prod_path + '/current'
+ROOT_PATH = File.directory?(local_path) ? local_path : remote_path
+APP_PATH = File.directory?(local_path) ? ROOT_PATH + '/demo_app' : remote_path + '/current'
 
 # Use at least one worker per core if you're on a dedicated server,
 # more will usually help for _short_ waits on databases/caches.
