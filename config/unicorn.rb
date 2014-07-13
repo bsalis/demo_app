@@ -8,9 +8,10 @@
 # See http://unicorn.bogomips.org/Unicorn/Configurator.html for complete
 # documentation.
 
-dev_path = "#{ENV['HOME']}/workspace/demo_app"
-prod_path = "#{ENV['HOME']}/demo_app/current"
-APP_PATH = File.directory?(dev_path) ? dev_path : prod_path
+local_path = "#{ENV['HOME']}/workspace"
+remote_path = "#{ENV['HOME']}/demo_app"
+ROOT_PATH = File.directory?(dev_path) ? dev_path : prod_path
+APP_PATH = File.directory?(dev_path) ? ROOT_PATH + '/demo_app' : prod_path + '/current'
 
 # Use at least one worker per core if you're on a dedicated server,
 # more will usually help for _short_ waits on databases/caches.
@@ -36,7 +37,7 @@ listen 30100, :tcp_nopush => true
 timeout 30
 
 # feel free to point this anywhere accessible on the filesystem
-pid APP_PATH + '/../shared/unicorn.pid'
+pid ROOT_PATH + '/shared/unicorn.pid'
 
 # By default, the Unicorn logger will write to stderr.
 # Additionally, ome applications/frameworks log to stderr or stdout,
