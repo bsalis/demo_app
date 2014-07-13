@@ -34,27 +34,30 @@ set :unicorn_pid, "#{current_path}/tmp/pids/unicorn.pid"
 
 namespace :deploy do
 
-#  desc 'Start Unicorn'
-#  task :start do
-#    on roles(:app) do
-#      execute "cd #{current_path} && #{fetch(:unicorn_binary)}"
-#    end
-#  end
-#  
-#  desc 'Stop Unicorn'
-#  task :stop do
-#    on roles(:app) do
-#      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill `cat #{fetch(:unicorn_pid)}`; fi"
-#    end
-#  end
+  desc 'Start Unicorn'
+  task :start do
+    on roles(:app) do
+      ubin = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
+      execute "cd #{current_path} && #{ubin}"
+    end
+  end
+  
+  desc 'Stop Unicorn'
+  task :stop do
+    on roles(:app) do
+      upid = fetch(:unicorn_pid)
+      execute "if [ -f #{upid} ]; then kill -QUIT `cat #{fetch(:unicorn_pid)}`; rm #{upid}; fi"
+    end
+  end
+
+  before :restart, :stop
 
   desc 'Restart application'
   task :restart do
     on roles(:app), 'in'.to_sym => :sequence, wait: 5 do
-      execute "if [ -f #{fetch(:unicorn_pid)} ]; then kill -QUIT `cat #{fetch(:unicorn_pid)}`; fi"
-      sleep 5
-      unicorn_binary = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
-      execute "cd #{current_path} && #{unicorn_binary}"
+      upid = fetch(:unicorn_pid)
+      ubin = "PATH=#{fetch(:default_env)[:path]} unicorn_rails -c #{fetch(:unicorn_config)} -E #{fetch(:rails_env)} -D"
+      execute "if [ -f #{upid} ]; then kill -HUP `cat #{upid}`; else cd #{current_path} && #{ubin}; fi"
     end
   end
 
