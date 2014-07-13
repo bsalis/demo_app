@@ -50,8 +50,6 @@ namespace :deploy do
     end
   end
 
-  before :restart, :stop
-
   desc 'Restart application'
   task :restart do
     on roles(:app), 'in'.to_sym => :sequence, wait: 5 do
